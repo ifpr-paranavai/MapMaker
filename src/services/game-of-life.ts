@@ -41,18 +41,12 @@ function countNeighbors(grid: number[][], x: number, y: number) {
     [0, 1],
     [1, -1],
     [1, 0],
-    [1, 1],
+    [1, 1]
   ];
   for (const [dx, dy] of directions) {
     const nx = x + dx;
     const ny = y + dy;
-    if (
-      ny >= 0 &&
-      ny < grid.length &&
-      nx >= 0 &&
-      nx < grid[0].length &&
-      grid[ny][nx] === 1
-    ) {
+    if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length && grid[ny][nx] === 1) {
       count++;
     }
   }

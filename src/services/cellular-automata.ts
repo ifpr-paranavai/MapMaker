@@ -9,10 +9,26 @@ const wallTransformRequirement = 3;
 
 //fill grid with randomly with 1 and 0
 
-//command called outisde of service
-export const runAutomataXTimes = (grid: number[][]) => {
-  const newGrid = makeNewGrid(grid);
-  console.log(newGrid);
+//commands called outisde of service
+export const runAutomataUntilChangesStop = (grid: number[][]) => {
+  let finalGrid = grid;
+  let loop = true;
+  while (loop) {
+    const newGrid = makeNewGrid(finalGrid);
+    if (compare(finalGrid, newGrid)) {
+      loop = false;
+    }
+    finalGrid = newGrid;
+  }
+  return finalGrid;
+};
+
+export const runAutomataXTimes = (grid: number[][], numOfLoops = 5) => {
+  let newGrid = grid;
+  for (let i = 0; i <= numOfLoops; i++) {
+    newGrid = makeNewGrid(newGrid);
+    console.log(newGrid);
+  }
   return newGrid;
 };
 
@@ -55,7 +71,7 @@ function countNeighbors(grid: number[][], x: number, y: number) {
     [0, 1],
     [1, -1],
     [1, 0],
-    [1, 1],
+    [1, 1]
   ];
   // se x === 0 nao checa a esquerda
   // se y === 0 nao checa em cima
@@ -70,17 +86,21 @@ function countNeighbors(grid: number[][], x: number, y: number) {
   for (const [dx, dy] of directions) {
     const ny = y + dy;
     const nx = x + dx;
-    if (
-      ny >= 0 &&
-      ny < grid.length &&
-      nx >= 0 &&
-      nx < grid[0].length &&
-      grid[ny][nx] === 1
-    ) {
+    if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length && grid[ny][nx] === 1) {
       count++;
     }
   }
   return count;
 }
 
-//repeat until it does not change
+// compare if two grids are equal assuming both grid widths and heights are the same
+const compare = (gridA: number[][], gridB: number[][]) => {
+  for (let y = 0; y < gridA.length; y++) {
+    for (let x = 0; x < gridA[0].length; x++) {
+      if (gridA[y][x] !== gridB[y][x]) {
+        return false;
+      }
+    }
+  }
+  return true;
+};

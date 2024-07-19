@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { getLifeGrid } from "../services/game-of-life";
+import React, { useEffect, useState } from 'react';
+import { getLifeGrid } from '../services/game-of-life';
 
 export default function Index() {
   const [grid, setGrid] = useState<number[][]>([[]]);
@@ -23,24 +23,22 @@ export default function Index() {
   return (
     <>
       {grid.map((row, y) => (
-        <div key={y} style={{ display: "flex" }}>
+        <div key={y} style={{ display: 'flex' }}>
           {row.map((cell, x) => (
             <div
               key={x}
               style={{
-                width: "10px",
-                height: "10px",
-                backgroundColor: cell === 1 ? "black" : "white",
-              }}
-            ></div>
+                width: '10px',
+                height: '10px',
+                backgroundColor: cell === 1 ? 'black' : 'white'
+              }}></div>
           ))}
         </div>
       ))}
       <button
         onClick={() => {
           transform();
-        }}
-      >
+        }}>
         start game of life
       </button>
     </>
