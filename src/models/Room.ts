@@ -1,7 +1,10 @@
+import Cell from './Cell';
 import FloorType from './enums/FloorType';
 import WallType from './enums/WallType';
 
-type CellDisplay = {
+type Room = {
   img: WallType | FloorType;
+  cells: Cell[];
 };
-export type { CellDisplay as default };
+
+export default Room;

@@ -1,4 +1,6 @@
 import CellDisplay from '../models/CellDisplay';
+import FloorType from '../models/enums/FloorType';
+import WallType from '../models/enums/WallType';
 
 export const makeFilledGrid = <T>(height: number, width: number, fillValue: T) => {
   const grid: T[][] = [];
@@ -11,12 +13,12 @@ export const makeFilledGrid = <T>(height: number, width: number, fillValue: T) =
   return grid;
 };
 
-export const makeFilledGridBlack = (height: number, width: number) => {
+export const makeFilledGridPath = (height: number, width: number) => {
   const grid: CellDisplay[][] = [];
   for (let y = 0; y < height; y++) {
     grid.push([]);
     for (let x = 0; x < width; x++) {
-      const col = { color: 'black' };
+      const col = { img: FloorType.DIRT };
       grid[y].push(col);
     }
   }
@@ -29,7 +31,7 @@ export const numberToCellDisplayGrid = (grid: number[][]) => {
     newGrid.push([]);
     for (let x = 0; x < grid[0].length; x++) {
       newGrid[y].push({
-        color: grid[y][x] === 1 ? 'black' : 'white'
+        img: grid[y][x] === 1 ? FloorType.DIRT : WallType.ROCK
       });
     }
   }
@@ -41,7 +43,7 @@ export const CellDisplayToNumberGrid = (grid: CellDisplay[][]) => {
   for (let y = 0; y < grid.length; y++) {
     newGrid.push([]);
     for (let x = 0; x < grid[0].length; x++) {
-      newGrid[y].push(grid[y][x].color === 'black' ? 1 : 0);
+      newGrid[y].push(grid[y][x].img === FloorType.DIRT ? 1 : 0);
     }
   }
   return newGrid;

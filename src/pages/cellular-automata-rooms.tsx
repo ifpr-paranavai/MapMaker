@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import dirt from '../assets/dirt.png';
+import grass from '../assets/Grass.png';
+import lava from '../assets/lava.png';
+import Mountain from '../assets/Mountain.png';
+import Path from '../assets/Path.png';
+import rock from '../assets/rock.png';
+import Sand from '../assets/Sand.png';
+import snow from '../assets/snow.png';
 
 import {
   groupCellsIntoRooms,
   runAutomataUntilChangesStop,
   runAutomataXTimes
 } from '../services/cellular-automata';
-import { makeFilledGrid, makeFilledGridBlack, numberToCellDisplayGrid } from '../utils/gridUtils';
+import { makeFilledGrid, makeFilledGridPath, numberToCellDisplayGrid } from '../utils/gridUtils';
 import CellDisplay from '../models/CellDisplay';
+import WallType from '../models/enums/WallType';
+import FloorType from '../models/enums/FloorType';
 
 export default function Index() {
-  const gridWidth = 50;
-  const gridHeight = 50;
+  const gridWidth = 80;
+  const gridHeight = 80;
 
   const [grid, setGrid] = useState<CellDisplay[][]>([]);
   const [numGrid, setNumGrid] = useState<number[][]>([]);
@@ -41,14 +51,77 @@ export default function Index() {
     const rooms = groupCellsIntoRooms(numGrid);
     console.log('rooms', rooms);
 
-    const gridWithRoomColors = makeFilledGridBlack(gridHeight, gridWidth);
+    const gridWithRoomColors = makeFilledGridPath(gridHeight, gridWidth);
     rooms.forEach((room) => {
       room.cells.forEach((cell) => {
-        gridWithRoomColors[cell.y][cell.x].color = room.color;
+        gridWithRoomColors[cell.y][cell.x].img = room.img;
       });
     });
     console.log('finalGrid', gridWithRoomColors);
     setGrid(gridWithRoomColors);
+  };
+  const getImageByEnum = (image: FloorType | WallType) => {
+    switch (image) {
+      case WallType.GRASS:
+        return grass;
+      case WallType.LAVA:
+        return lava;
+      case WallType.MOUNTAIN:
+        return Mountain;
+      case WallType.ROCK:
+        return rock;
+      case WallType.SAND:
+        return Sand;
+      case WallType.SNOW:
+        return snow;
+      case FloorType.DIRT:
+        return dirt;
+      default:
+        return dirt;
+    }
+  };
+
+  const renderGrid = () => {
+    return (
+      <>
+        {' '}
+        {grid.map((row, y) => (
+          <div key={y} style={{ display: 'flex' }}>
+            {row.map((cell, x) => (
+              <img
+                key={x}
+                style={{
+                  width: '10px',
+                  height: '10px'
+                }}
+                src={getImageByEnum(cell.img)}
+              />
+            ))}
+          </div>
+        ))}
+      </>
+    );
+  };
+
+  const renderNumGrid = () => {
+    return (
+      <>
+        {' '}
+        {numGrid.map((row, y) => (
+          <div key={y} style={{ display: 'flex' }}>
+            {row.map((cell, x) => (
+              <div
+                key={x}
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  backgroundColor: cell === 1 ? 'black' : 'white'
+                }}></div>
+            ))}
+          </div>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -77,19 +150,7 @@ export default function Index() {
         }}>
         Separar em salas
       </button>
-      {grid.map((row, y) => (
-        <div key={y} style={{ display: 'flex' }}>
-          {row.map((cell, x) => (
-            <div
-              key={x}
-              style={{
-                width: '10px',
-                height: '10px',
-                backgroundColor: cell.color
-              }}></div>
-          ))}
-        </div>
-      ))}
+      {grid.length === 0 ? renderNumGrid() : renderGrid()}
     </>
   );
 }

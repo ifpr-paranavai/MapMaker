@@ -1,3 +1,7 @@
+import Cell from '../models/Cell';
+import WallType from '../models/enums/WallType';
+import Room from '../models/Room';
+
 // parametros possiveis
 const gridHeight = 50;
 const gridWidth = 50;
@@ -105,16 +109,6 @@ const compare = (gridA: number[][], gridB: number[][]) => {
   return true;
 };
 
-type Cell = {
-  x: number;
-  y: number;
-};
-
-type Room = {
-  color: string;
-  cells: Cell[];
-};
-
 export const groupCellsIntoRooms = (grid: number[][]) => {
   //cria um array para guardar grupos de chãos representando salas
   const rooms: Room[] = [];
@@ -128,7 +122,7 @@ export const groupCellsIntoRooms = (grid: number[][]) => {
         if (!cellRoom) {
           //cria uma sala nova
           const room: Room = {
-            color: makeRandomColor(),
+            img: getRandomFloor(),
             cells: []
           };
           console.log('criando nova sala', cell);
@@ -222,10 +216,11 @@ const findVonNeumannFloorNeighbors = (cell: Cell, grid: number[][]) => {
   return floorNeighbors;
 };
 
-const makeRandomColor = () => {
-  // return '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 6);
-  // Math.pow is slow, use constant instead.
-  const color = Math.floor(Math.random() * 16777216).toString(16);
-  // Avoid loops.
-  return '#000000'.slice(0, -color.length) + color;
+const getRandomFloor = (): WallType => {
+  const wallTypes = Object.values(WallType).filter(
+    (value) => typeof value === 'number'
+  ) as number[];
+  const randomIndex = Math.floor(Math.random() * wallTypes.length);
+  console.log('Random floor asset selected:', randomIndex, WallType[randomIndex]);
+  return randomIndex;
 };
