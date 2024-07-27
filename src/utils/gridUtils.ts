@@ -18,7 +18,7 @@ export const makeFilledGridPath = (height: number, width: number) => {
   for (let y = 0; y < height; y++) {
     grid.push([]);
     for (let x = 0; x < width; x++) {
-      const col = { img: FloorType.DIRT };
+      const col = { img: FloorType.DIRT, isWall: false };
       grid[y].push(col);
     }
   }
@@ -31,7 +31,8 @@ export const numberToCellDisplayGrid = (grid: number[][]) => {
     newGrid.push([]);
     for (let x = 0; x < grid[0].length; x++) {
       newGrid[y].push({
-        img: grid[y][x] === 1 ? FloorType.DIRT : WallType.ROCK
+        img: grid[y][x] === 1 ? FloorType.DIRT : WallType.ROCK,
+        isWall: false
       });
     }
   }

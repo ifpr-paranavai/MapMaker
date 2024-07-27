@@ -56,6 +56,10 @@ export default function Index() {
       room.cells.forEach((cell) => {
         gridWithRoomColors[cell.y][cell.x].img = room.img;
       });
+      room.cornerCells.forEach((cell) => {
+        gridWithRoomColors[cell.y][cell.x].img = room.img;
+        gridWithRoomColors[cell.y][cell.x].isWall = true;
+      });
     });
     console.log('finalGrid', gridWithRoomColors);
     setGrid(gridWithRoomColors);
@@ -72,8 +76,8 @@ export default function Index() {
         return rock;
       case WallType.SAND:
         return Sand;
-      case WallType.SNOW:
-        return snow;
+      // case WallType.SNOW:
+      //   return snow;
       case FloorType.DIRT:
         return dirt;
       default:
@@ -92,7 +96,8 @@ export default function Index() {
                 key={x}
                 style={{
                   width: '10px',
-                  height: '10px'
+                  height: '10px',
+                  opacity: cell.isWall ? 1.0 : 0.7
                 }}
                 src={getImageByEnum(cell.img)}
               />

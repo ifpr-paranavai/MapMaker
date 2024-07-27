@@ -3,8 +3,9 @@ enum WallType {
   LAVA,
   MOUNTAIN,
   ROCK,
-  SAND,
-  SNOW
+  SAND
+  // SNOW,
+  // PATH,
 }
 
 export default WallType;

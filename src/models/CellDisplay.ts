@@ -3,5 +3,6 @@ import WallType from './enums/WallType';
 
 type CellDisplay = {
   img: WallType | FloorType;
+  isWall: boolean;
 };
 export type { CellDisplay as default };

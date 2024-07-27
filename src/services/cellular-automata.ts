@@ -1,6 +1,7 @@
 import Cell from '../models/Cell';
 import WallType from '../models/enums/WallType';
 import Room from '../models/Room';
+import { countMooreNeighbors, findVonNeumannFloorNeighbors } from '../utils/cellUtils';
 
 // parametros possiveis
 const gridHeight = 50;
@@ -65,38 +66,6 @@ const makeNewGrid = (grid: number[][]) => {
   return newGrid;
 };
 
-function countMooreNeighbors(grid: number[][], x: number, y: number) {
-  let count = 0;
-  const directions = [
-    [-1, -1],
-    [-1, 0],
-    [-1, 1],
-    [0, -1],
-    [0, 1],
-    [1, -1],
-    [1, 0],
-    [1, 1]
-  ];
-  // se x === 0 nao checa a esquerda
-  // se y === 0 nao checa em cima
-  // se x === gridWidth-1 não checa a direita
-  // se y === gridHeight-1 nao checa em baixo
-  if (y === 0 || y === grid.length - 1) {
-    count += 3;
-  }
-  if (x === 0 || x === grid[0].length - 1) {
-    count += 3;
-  }
-  for (const [dx, dy] of directions) {
-    const ny = y + dy;
-    const nx = x + dx;
-    if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length && grid[ny][nx] === 1) {
-      count++;
-    }
-  }
-  return count;
-}
-
 // compare if two grids are equal assuming both grid widths and heights are the same
 const compare = (gridA: number[][], gridB: number[][]) => {
   for (let y = 0; y < gridA.length; y++) {
@@ -123,12 +92,12 @@ export const groupCellsIntoRooms = (grid: number[][]) => {
           //cria uma sala nova
           const room: Room = {
             img: getRandomFloor(),
-            cells: []
+            cells: [],
+            cornerCells: []
           };
           console.log('criando nova sala', cell);
           //cria um array de celulas a adicionar
           const cellsToAdd: Cell[] = [cell];
-          const addedCells: Cell[] = [];
           //percorre o array de celulas a serem adicionadas
           while (cellsToAdd.length !== 0) {
             const cellAdd = cellsToAdd[0];
@@ -142,22 +111,25 @@ export const groupCellsIntoRooms = (grid: number[][]) => {
               const isNeighborToAdd = cellsToAdd.find((c) => {
                 return c.x === neighbor.x && c.y === neighbor.y;
               });
-              const isNeighborAdded = addedCells.find((c) => {
-                return c.x === neighbor.x && c.y === neighbor.y;
-              });
+              const isNeighborAdded = isCellInRoom(room, neighbor);
+
               if (!isNeighborToAdd && !isNeighborAdded) {
                 cellsToAdd.push(neighbor);
                 cellTestLog.push(neighbor);
               }
             }
             printCellArray('novas celulas', cellTestLog);
-            //adiciona na sala e remove de cellsToAdd
-            addedCells.push(cellAdd);
+            //adiciona na sala, se um dos vizinhos é chao ele é um canto
+            if (floorNeighbors.length !== 4) {
+              room.cornerCells.push(cellAdd);
+            } else {
+              room.cells.push(cellAdd);
+            }
+            //remove de cellsToAdd
             cellsToAdd.shift();
             printCellArray('cellsToAdd', cellsToAdd);
-            printCellArray('addedCells', addedCells);
+            printCellArray('addedCells', [...room.cells, ...room.cornerCells]);
           }
-          room.cells = addedCells;
           rooms.push(room);
         }
       }
@@ -177,43 +149,19 @@ const printCellArray = (text: string, cells: Cell[]) => {
 
 const findCellRoom = (rooms: Room[], cell: Cell) => {
   return rooms.find((room) => {
-    return room.cells.find((c) => {
-      return cell.y === c.y && cell.x === c.x;
-    });
+    return isCellInRoom(room, cell);
   });
 };
 
-const findVonNeumannFloorNeighbors = (cell: Cell, grid: number[][]) => {
-  const floorNeighbors: Cell[] = [];
-  // checando celula a esquerda
-  if (cell.y !== 0 && grid[cell.y - 1][cell.x] === 0) {
-    floorNeighbors.push({
-      x: cell.x,
-      y: cell.y - 1
-    });
-  }
-  // checando celula a direita
-  if (cell.y !== grid.length - 1 && grid[cell.y + 1][cell.x] === 0) {
-    floorNeighbors.push({
-      x: cell.x,
-      y: cell.y + 1
-    });
-  }
-  // checando celula em cima
-  if (cell.x !== 0 && grid[cell.y][cell.x - 1] === 0) {
-    floorNeighbors.push({
-      x: cell.x - 1,
-      y: cell.y
-    });
-  }
-  // checando celula em baixo
-  if (cell.x !== grid[0].length - 1 && grid[cell.y][cell.x + 1] === 0) {
-    floorNeighbors.push({
-      x: cell.x + 1,
-      y: cell.y
-    });
-  }
-  return floorNeighbors;
+const isCellInRoom = (room: Room, cell: Cell) => {
+  return (
+    room.cells.find((c) => {
+      return c.x === cell.x && c.y === cell.y;
+    }) ||
+    room.cornerCells.find((c) => {
+      return c.x === cell.x && c.y === cell.y;
+    })
+  );
 };
 
 const getRandomFloor = (): WallType => {
@@ -224,3 +172,5 @@ const getRandomFloor = (): WallType => {
   console.log('Random floor asset selected:', randomIndex, WallType[randomIndex]);
   return randomIndex;
 };
+//TODO
+const guaranteePathBetweenRooms = () => {};
