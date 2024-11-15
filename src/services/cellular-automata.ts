@@ -15,12 +15,21 @@ const wallTransformRequirement = 3;
 //fill grid with randomly with 1 and 0
 
 //commands called outisde of service
-export const runAutomataUntilChangesStop = (grid: number[][]) => {
+export const runAutomataUntilChangesStop = (grid: number[][], wallToFloor = 2, floorToWall = 5, infiniteLoopCallback = ()=>{}) => {
+  let stopCounter = 1000; //counter to stop infinite loops if gens > 1000
+  const startingGrid = grid;
+
   let finalGrid = grid;
   let loop = true;
   while (loop) {
-    const newGrid = makeNewGrid(finalGrid);
+    const newGrid = makeNewGrid(finalGrid, wallToFloor, floorToWall);
     if (compare(finalGrid, newGrid)) {
+      loop = false;
+    }
+    stopCounter--;
+    if(stopCounter === 0) {
+      console.log('Infinite loop, startingGrid:', startingGrid);
+      infiniteLoopCallback();
       loop = false;
     }
     finalGrid = newGrid;
@@ -28,17 +37,17 @@ export const runAutomataUntilChangesStop = (grid: number[][]) => {
   return finalGrid;
 };
 
-export const runAutomataXTimes = (grid: number[][], numOfLoops = 5) => {
+export const runAutomataXTimes = (grid: number[][], numOfLoops = 5, wallToFloor = 2, floorToWall = 5) => {
   let newGrid = grid;
   for (let i = 0; i <= numOfLoops; i++) {
-    newGrid = makeNewGrid(newGrid);
-    console.log(newGrid);
+    newGrid = makeNewGrid(newGrid, wallToFloor, floorToWall);
+    // console.log(newGrid);
   }
   return newGrid;
 };
 
 // run the check for every cell and update it in a new grid
-const makeNewGrid = (grid: number[][]) => {
+const makeNewGrid = (grid: number[][], wallToFloor: number, floorToWall: number) => {
   const newGrid: number[][] = [];
   for (let y = 0; y < grid.length; y++) {
     newGrid.push([]);
@@ -47,13 +56,13 @@ const makeNewGrid = (grid: number[][]) => {
       // If a cell is a wall and less than 3 cells in the Moore neighborhood are walls, the cell changes state to a floor.
       // If a cell is a floor and greater than 4 cells in the Moore neighborhood are walls, the cell changes state to a wall.
       if (grid[y][x] === 1) {
-        if (count < 3) {
+        if (count <= wallToFloor) {
           newGrid[y].push(0);
         } else {
           newGrid[y].push(1);
         }
       } else {
-        if (count > 4) {
+        if (count >= floorToWall) {
           newGrid[y].push(1);
         } else {
           newGrid[y].push(0);
@@ -95,13 +104,13 @@ export const groupCellsIntoRooms = (grid: number[][]) => {
             cells: [],
             cornerCells: []
           };
-          console.log('criando nova sala', cell);
+          // console.log('criando nova sala', cell);
           //cria um array de celulas a adicionar
           const cellsToAdd: Cell[] = [cell];
           //percorre o array de celulas a serem adicionadas
           while (cellsToAdd.length !== 0) {
             const cellAdd = cellsToAdd[0];
-            console.log('celula sendo adicionada', cellAdd);
+            // console.log('celula sendo adicionada', cellAdd);
             //acha os seus vizinhos
             const floorNeighbors = findVonNeumannFloorNeighbors(cellAdd, grid);
             printCellArray('vizinhos', floorNeighbors);
@@ -139,12 +148,12 @@ export const groupCellsIntoRooms = (grid: number[][]) => {
 };
 
 const printCellArray = (text: string, cells: Cell[]) => {
-  console.log(
-    text,
-    cells.map((c) => {
-      return `x: ${c.x}, y: ${c.y}`;
-    })
-  );
+  // console.log(
+  //   text,
+  //   cells.map((c) => {
+  //     return `x: ${c.x}, y: ${c.y}`;
+  //   })
+  // );
 };
 
 const findCellRoom = (rooms: Room[], cell: Cell) => {
@@ -169,7 +178,7 @@ const getRandomFloor = (): WallType => {
     (value) => typeof value === 'number'
   ) as number[];
   const randomIndex = Math.floor(Math.random() * wallTypes.length);
-  console.log('Random floor asset selected:', randomIndex, WallType[randomIndex]);
+  // console.log('Random floor asset selected:', randomIndex, WallType[randomIndex]);
   return randomIndex;
 };
 //TODO

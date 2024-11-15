@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import GameOfLife from './pages/game-of-life';
 import CellularAutomata from './pages/cellular-automata';
 import CellularAutomataRooms from './pages/cellular-automata-rooms';
+import CellularAutomataParams from './pages/cellular-automata-params';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="" element={<CellularAutomata />} />
         <Route path="/rooms" element={<CellularAutomataRooms />} />
+        <Route path="/params" element={<CellularAutomataParams />} />
         <Route path="/gol" element={<GameOfLife />}></Route>
       </Routes>
     </BrowserRouter>

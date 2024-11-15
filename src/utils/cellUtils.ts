@@ -18,10 +18,13 @@ export const countMooreNeighbors = (grid: number[][], x: number, y: number) => {
   // se x === gridWidth-1 não checa a direita
   // se y === gridHeight-1 nao checa em baixo
   if (y === 0 || y === grid.length - 1) {
-    count += 3;
+    //FORCANDO O ESTADO DAS PAREDES = 1
+    return 9;
+    // count += 3;
   }
   if (x === 0 || x === grid[0].length - 1) {
-    count += 3;
+    return 9;
+    // count += 3;
   }
   for (const [dx, dy] of directions) {
     const ny = y + dy;

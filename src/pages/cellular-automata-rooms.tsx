@@ -33,7 +33,7 @@ export default function Index() {
         newGrid[y].push(Math.random() > 0.55 ? 1 : 0);
       }
     }
-    console.log('numGrid', numGrid);
+    // console.log('numGrid', numGrid);
     setNumGrid(newGrid);
   };
 
@@ -49,7 +49,7 @@ export default function Index() {
 
   const separateIntoRooms = () => {
     const rooms = groupCellsIntoRooms(numGrid);
-    console.log('rooms', rooms);
+    // console.log('rooms', rooms);
 
     const gridWithRoomColors = makeFilledGridPath(gridHeight, gridWidth);
     rooms.forEach((room) => {
@@ -61,7 +61,7 @@ export default function Index() {
         gridWithRoomColors[cell.y][cell.x].isWall = true;
       });
     });
-    console.log('finalGrid', gridWithRoomColors);
+    // console.log('finalGrid', gridWithRoomColors);
     setGrid(gridWithRoomColors);
   };
   const getImageByEnum = (image: FloorType | WallType) => {
